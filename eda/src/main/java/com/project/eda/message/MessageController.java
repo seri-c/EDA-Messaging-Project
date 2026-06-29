@@ -1,9 +1,11 @@
 package com.project.eda.message;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.eda.message.dto.MessageResponse;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @RequestMapping("/messages")
@@ -46,5 +50,23 @@ public class MessageController {
     public void readMessage(@PathVariable UUID id) {
         messageService.readMessage(id);
     }
+
+    @GetMapping("/{id}/labels")
+    public Set<String> getMessageLabels(@PathVariable UUID id){
+        return messageService.getMessageLabels(id);
+    }
+
+    @PutMapping("/{messageId}/labels/{labelName}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addLabel(@PathVariable UUID messageId, @PathVariable String labelName) {
+        messageService.addLabel(messageId, labelName);
+    }
+
+    @DeleteMapping("/{messageId}/labels/{labelName}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeLabel(@PathVariable UUID messageId, @PathVariable String labelName) {
+        messageService.removeLabel(messageId, labelName);
+    }
+
 
 }

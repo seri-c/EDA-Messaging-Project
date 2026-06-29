@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.Set;
 
 import com.project.eda.exception.MessageNotFoundException;
@@ -94,11 +95,13 @@ public class MessageService {
 
     }
 
-    public Set<Label> getMessageLabels(UUID messageId) {
+    public Set<String> getMessageLabels(UUID messageId) {
 
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageNotFoundException(messageId));
-        return message.getLabels();
+        return message.getLabels().stream()
+                        .map(Label::getName)
+                        .collect(Collectors.toSet());
 
     }
 
