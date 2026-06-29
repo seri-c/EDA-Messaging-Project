@@ -1,0 +1,129 @@
+openapi: '3.0.3'
+info:
+  title: Email Service
+  version: '1.0'
+servers:
+  - url: https://api.server.test/v1
+paths:
+  /emails:
+    get:
+      tags:
+        - Emails
+      summary: Retrieve all emails
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+                schema:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Email'
+        "500":
+            description: Internal server error
+            content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ErrorResponse"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/InternalServerError"
+  /emails/{id}:
+    get:
+      tags:
+        - Emails
+      summary: Retrieve an email by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The email ID
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+                schema:
+                    $ref: '#/components/schemas/Email'
+        "404":
+            description: Message not found
+            content:
+                application/json:
+                    schema:
+                        $ref: "#/components/schemas/ErrorResponse"
+                    examples:
+                        default:
+                            $ref: "#/components/examples/EmailNotFound"
+        "500":
+            description: Internal server error
+            content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ErrorResponse"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/InternalServerError"
+
+components:
+  examples:
+        InternalServerError:
+            value:
+                timestamp: 2026-06-28T14:32:10Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred
+                path: /emails
+        EmailNotFound:
+            value:
+                timestamp: 2026-06-28T14:32:10Z
+                status: 404
+                error: Not Found
+                message: Email not found
+                path: /emails/123
+  schemas:
+          Email:
+              type: object
+              properties:
+                  id:
+                      type: string
+                      format: uuid
+                  eventId:
+                    type: string
+                    format: uuid
+                  recipientId:
+                    type: string
+                    format: uuid
+                  subject:
+                      type: string
+                  body:
+                      type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+                    
+              required:
+                  - id
+                  - subject
+                  - body
+          ErrorResponse:
+            type: object
+            properties:
+                timestamp:
+                    type: string
+                    format: date-time
+                status:
+                    type: integer
+                error:
+                    type: string
+                message:
+                    type: string
+                path:
+                    type: string
+            required:
+                - timestamp
+                - status
+                - error
+                - message
+                - path

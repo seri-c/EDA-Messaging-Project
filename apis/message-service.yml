@@ -1,0 +1,455 @@
+openapi: 3.0.0
+info:
+    title: Message Service API
+    version: "1.0"
+servers:
+    - url: https://api.server.test/v1
+paths:
+    /messages:
+        post:
+            tags:
+                - Messages
+            summary: Send a new message
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                senderId:
+                                    type: string
+                                    format: uuid
+                                recipientId:
+                                    type: string
+                                    format: uuid
+                                body:
+                                    type: string
+            responses:
+                "201":
+                    description: Message sent successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Message"
+                                
+                "400":
+                    description: Invalid request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InvalidRequest"
+                "404":
+                    description: Recipient not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/RecipientNotFound"
+                "500":
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InternalServerError"
+        get:
+            tags:
+                - Messages
+            summary: Retrieve all existing messages
+            parameters:
+                - name: recipientId
+                  in: query
+                  description: The recipient's ID
+                  schema:
+                      type: string
+                      format: uuid
+                - name: senderId
+                  in: query
+                  description: The sender's ID
+                  schema:
+                      type: string
+                      format: uuid
+                
+            responses:
+                "200":
+                    description: Messages retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Message"                       
+                "500":
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InternalServerError"
+
+    /messages/{id}:
+        get:
+            tags:
+                - Messages
+            summary: Retrieve existing message by ID
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  description: The message ID
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "200":
+                    description: Message retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Message"
+                                
+                "400":
+                    description: Invalid request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InvalidRequest"
+                "404":
+                    description: Message not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/MessageNotFound"
+                "500":
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InternalServerError"
+        
+    /messages/{id}/read:
+        patch:
+            tags:
+                - Messages
+            summary: Mark a message as read by ID
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  description: The message ID
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "204":
+                    description: Message marked as read successfully
+                         
+                "400":
+                    description: Invalid request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InvalidRequest"
+                "404":
+                    description: Message not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/MessageNotFound"
+                "500":
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InternalServerError"
+    /messages/{id}/acknowledge:
+        patch:
+            tags:
+                - Messages
+            summary: Mark a message as acknowledged by ID
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  description: The message ID
+                  schema:
+                      type: string
+                      format: uuid
+            responses:
+                "204":
+                    description: Message marked as acknowledged successfully
+                                      
+                "400":
+                    description: Invalid request
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InvalidRequest"
+                "404":
+                    description: Message not found
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/MessageNotFound"
+                "500":
+                    description: Internal server error
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/InternalServerError"
+    
+    /messages/{messageId}/labels:
+        get:
+            tags: 
+                - Labels
+            summary: Retrieve labels for a message
+            parameters:
+               - name: messageId
+                 in: path
+                 required: true
+                 schema:
+                    type: string
+                    format: uuid
+            responses:
+             "200":
+                description: Labels retrieved successfully
+                content:
+                        application/json:
+                            schema:
+                                type: array
+                                items: 
+                                    type: string
+                                example:
+                                    - "Informational"
+                                    - "High Priority"
+             "400":
+                description: Invalid request
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ErrorResponse"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/InvalidRequest"
+             "404":
+                description: Message not found
+                content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/MessageNotFound"
+             "500":
+                description: Internal server error
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ErrorResponse"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/InternalServerError"
+    
+
+
+    /messages/{messageId}/labels/{labelName}:
+        put:
+            tags: 
+                - Labels
+            summary: Add label to message
+            parameters:
+                - name: messageId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    format: uuid
+                - name: labelName
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+             "204":
+                description: Label added to message successfully
+                                    - "High Priority"
+             "400":
+                description: Invalid request
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ErrorResponse"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/InvalidRequest"
+             "404":
+                description: Message not found
+                content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/MessageNotFound"
+             "500":
+                description: Internal server error
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ErrorResponse"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/InternalServerError"
+    
+
+        delete:
+            tags: 
+                - Labels
+            summary: Remove label from message
+            parameters:
+                - name: messageId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+                    format: uuid
+                - name: labelName
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+             "204":
+                description: Label removed from message successfully
+                                    - "High Priority"
+             "400":
+                description: Invalid request
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ErrorResponse"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/InvalidRequest"
+             "404":
+                description: Message not found
+                content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/ErrorResponse"
+                            examples:
+                                default:
+                                    $ref: "#/components/examples/MessageNotFound"
+             "500":
+                description: Internal server error
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ErrorResponse"
+                        examples:
+                            default:
+                                $ref: "#/components/examples/InternalServerError"
+    
+
+
+components:
+    examples:
+        InvalidRequest:
+            value:
+                timestamp: 2026-06-28T14:32:10Z
+                status: 400
+                error: Invalid request
+                message: Invalid request
+                path: /messages/123
+        RecipientNotFound:
+            value:
+                timestamp: 2026-06-28T14:32:10Z
+                status: 404
+                error: Not Found
+                message: Recipient not found
+                path: /messages
+        MessageNotFound:
+            value:
+                timestamp: 2026-06-28T14:32:10Z
+                status: 404
+                error: Not Found
+                message: Message not found
+                path: /messages/123
+        InternalServerError:
+            value:
+                timestamp: 2026-06-28T14:32:10Z
+                status: 500
+                error: Internal Server Error
+                message: An unexpected error occurred.
+                path: /messages/123
+    schemas:
+        Message:
+            type: object
+            properties:
+                id:
+                    type: string
+                    format: uuid
+                senderId:
+                    type: string
+                    format: uuid
+                recipientId:
+                    type: string
+                    format: uuid
+                body:
+                    type: string
+            required:
+                - id
+                - senderId
+                - recipientId
+                - body
+        ErrorResponse:
+            type: object
+            properties:
+                timestamp:
+                    type: string
+                    format: date-time
+                status:
+                    type: integer
+                error:
+                    type: string
+                message:
+                    type: string
+                path:
+                    type: string
