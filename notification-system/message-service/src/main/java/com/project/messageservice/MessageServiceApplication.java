@@ -1,13 +1,13 @@
-package com.project.eda;
+package com.project.messageservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class EdaApplication {
+public class MessageServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(EdaApplication.class, args);
+		SpringApplication.run(MessageServiceApplication.class, args);
 	}
 
 }

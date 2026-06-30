@@ -1,12 +1,15 @@
-package com.project.eda.message;
+package com.project.messageservice.message;
 
 import java.util.stream.Collectors;
 
-import com.project.eda.message.dto.CreateMessageRequest;
-import com.project.eda.message.dto.MessageResponse;
-import com.project.eda.message.entity.Label;
-import com.project.eda.message.entity.Message;
+import org.springframework.stereotype.Component;
 
+import com.project.messageservice.message.dto.CreateMessageRequest;
+import com.project.messageservice.message.dto.MessageResponse;
+import com.project.messageservice.message.entity.Label;
+import com.project.messageservice.message.entity.Message;
+
+@Component
 public class MessageMapper {
 
     public MessageResponse toResponse(Message message) {

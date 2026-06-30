@@ -1,4 +1,4 @@
-package com.project.eda.message.entity;
+package com.project.messageservice.message.entity;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -27,7 +27,7 @@ import lombok.NoArgsConstructor;
 public class Message {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private UUID id;
 
     private UUID senderId;

@@ -1,4 +1,4 @@
-package com.project.eda.message.dto;
+package com.project.messageservice.message.dto;
 
 import java.util.Set;
 import java.util.UUID;

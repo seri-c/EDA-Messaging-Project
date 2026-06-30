@@ -1,4 +1,4 @@
-package com.project.eda.message;
+package com.project.messageservice.message;
 
 import java.util.List;
 import java.util.Set;
@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.eda.message.dto.MessageResponse;
+import com.project.messageservice.message.dto.CreateMessageRequest;
+import com.project.messageservice.message.dto.MessageResponse;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -26,6 +30,11 @@ public class MessageController {
 
     public MessageController(MessageService messageService) {
         this.messageService = messageService;
+    }
+
+    @PostMapping
+    public MessageResponse createMessage(@RequestBody CreateMessageRequest request) {
+        return messageService.createMessage(request);
     }
 
     @GetMapping
@@ -45,7 +54,7 @@ public class MessageController {
         messageService.acknowledgeMessage(id);
     }
 
-    @PatchMapping("/{id}/acknowledge")
+    @PatchMapping("/{id}/read")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void readMessage(@PathVariable UUID id) {
         messageService.readMessage(id);

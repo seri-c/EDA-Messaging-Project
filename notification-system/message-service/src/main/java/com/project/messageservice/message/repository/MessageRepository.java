@@ -1,11 +1,11 @@
-package com.project.eda.message.repository;
+package com.project.messageservice.message.repository;
 
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.project.eda.message.entity.Message;
+import com.project.messageservice.message.entity.Message;
 
 public interface MessageRepository extends JpaRepository<Message, UUID> {
 

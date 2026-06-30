@@ -1,4 +1,4 @@
-package com.project.eda.exception;
+package com.project.messageservice.exception;
 
 import java.util.UUID;
 

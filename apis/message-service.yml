@@ -42,15 +42,6 @@ paths:
                             examples:
                                 default:
                                     $ref: "#/components/examples/InvalidRequest"
-                "404":
-                    description: Recipient not found
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ErrorResponse"
-                            examples:
-                                default:
-                                    $ref: "#/components/examples/RecipientNotFound"
                 "500":
                     description: Internal server error
                     content:

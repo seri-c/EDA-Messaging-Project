@@ -1,4 +1,4 @@
-package com.project.eda.exception;
+package com.project.messageservice.exception;
 
 import java.time.Instant;
 import java.util.List;
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
                 Instant.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
-                ex.getMessage(),
+                "An unexpected error occured",
                 request.getRequestURI(),
                 null);
 

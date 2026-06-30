@@ -1,4 +1,4 @@
-package com.project.eda.message.entity;
+package com.project.messageservice.message.entity;
 
 import java.util.Objects;
 

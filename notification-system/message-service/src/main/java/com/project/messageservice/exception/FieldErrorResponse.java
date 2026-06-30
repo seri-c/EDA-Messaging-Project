@@ -1,4 +1,4 @@
-package com.project.eda.exception;
+package com.project.messageservice.exception;
 
 public record FieldErrorResponse(
         String field,

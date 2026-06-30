@@ -1,24 +1,26 @@
-package com.project.eda.message;
+package com.project.messageservice.message;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.Set;
 
-import com.project.eda.exception.MessageNotFoundException;
-import com.project.eda.message.dto.CreateMessageRequest;
-import com.project.eda.message.dto.MessageResponse;
-import com.project.eda.message.entity.Label;
-import com.project.eda.message.entity.Message;
-import com.project.eda.message.repository.LabelRepository;
-import com.project.eda.message.repository.MessageRepository;
+import com.project.messageservice.exception.MessageNotFoundException;
+import com.project.messageservice.message.dto.CreateMessageRequest;
+import com.project.messageservice.message.dto.MessageResponse;
+import com.project.messageservice.message.entity.Label;
+import com.project.messageservice.message.entity.Message;
+import com.project.messageservice.message.repository.LabelRepository;
+import com.project.messageservice.message.repository.MessageRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+@Service
 @RequiredArgsConstructor
 public class MessageService {
 
