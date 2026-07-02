@@ -36,6 +36,7 @@ public class MessageService {
         Message newMessage = messageMapper.toNewMessage(request);
         messageRepository.save(newMessage);
 
+        log.info("New message %s created".formatted(newMessage.getId()));
 
         return messageMapper.toResponse(newMessage);
 
@@ -93,7 +94,6 @@ public class MessageService {
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new MessageNotFoundException(messageId));
         message.markAsAcknowledged();
-        ;
 
     }
 

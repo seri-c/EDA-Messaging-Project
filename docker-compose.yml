@@ -1,0 +1,36 @@
+services:
+
+  message-service:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - rabbitmq
+    env_file:
+      - .env
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: message_postgres_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_MESSAGE_DB}
+      POSTGRES_USER: ${POSTGRES_MESSAGE_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_MESSAGE_PASSWORD}
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq:/var/lib/rabbitmq
+      
+volumes:
+  rabbitmq:
