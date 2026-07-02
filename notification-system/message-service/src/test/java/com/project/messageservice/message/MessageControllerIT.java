@@ -70,13 +70,14 @@ public class MessageControllerIT {
                     "/etc/rabbitmq/definitions.json")
             .withCopyFileToContainer(
                     MountableFile.forHostPath(RABBITMQ_CONF),
-                    "/etc/rabbitmq/rabbitmq.conf")
-            .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
+                    "/etc/rabbitmq/rabbitmq.conf");
 
     @DynamicPropertySource
     static void rabbitProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.rabbitmq.host", rabbitmq::getHost);
         registry.add("spring.rabbitmq.port", rabbitmq::getAmqpPort);
+        registry.add("spring.rabbitmq.username", ()-> "test");
+        registry.add("spring.rabbitmq.password", ()-> "test");
     }
 
     @Autowired
