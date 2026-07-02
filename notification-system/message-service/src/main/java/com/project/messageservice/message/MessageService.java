@@ -11,7 +11,9 @@ import java.util.Set;
 
 import com.project.messageservice.exception.MessageNotFoundException;
 import com.project.messageservice.message.dto.CreateMessageRequest;
+import com.project.messageservice.message.dto.MessageEvent;
 import com.project.messageservice.message.dto.MessageResponse;
+import com.project.messageservice.message.dto.MessageEvent.EventType;
 import com.project.messageservice.message.entity.Label;
 import com.project.messageservice.message.entity.Message;
 import com.project.messageservice.message.repository.LabelRepository;
@@ -29,6 +31,7 @@ public class MessageService {
     private final MessageRepository messageRepository;
     private final LabelRepository labelRepository;
     private final MessageMapper messageMapper;
+    private final EventPublisher eventPublisher;
 
     @Transactional
     public MessageResponse createMessage(CreateMessageRequest request){
@@ -38,6 +41,9 @@ public class MessageService {
 
         log.info("New message %s created".formatted(newMessage.getId()));
 
+        MessageEvent newMessageEvent = messageMapper.toEvent(newMessage, EventType.MESSAGE_CREATED);
+        eventPublisher.publish(newMessageEvent);
+        
         return messageMapper.toResponse(newMessage);
 
     }

@@ -31,6 +31,12 @@ services:
       - "15672:15672"
     volumes:
       - rabbitmq:/var/lib/rabbitmq
+      - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./rabbitmq/definitions.template.json:/etc/rabbitmq/definitions.json:ro
+    command: >
+      sh -c "envsubst < /etc/rabbitmq/definitions.template.json
+      > /etc/rabbitmq/definitions.json
+      && rabbitmq-server"
       
 volumes:
   rabbitmq:

@@ -16,10 +16,14 @@ public record CreateMessageRequest(
 
 ) {
 
-        public class CreateMessageRequestBuilder {
+        public static class CreateMessageRequestBuilder {
                 private UUID senderId;
                 private UUID recipientId;
                 private String body;
+                
+                public CreateMessageRequestBuilder(){
+
+                }
 
                 public CreateMessageRequestBuilder(UUID senderId, UUID recipientId, String body) {
                         this.senderId = senderId;

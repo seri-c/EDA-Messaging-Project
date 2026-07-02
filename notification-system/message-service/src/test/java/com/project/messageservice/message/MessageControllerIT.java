@@ -5,18 +5,22 @@ import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasItems;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.MountableFile;
+
 import tools.jackson.databind.ObjectMapper;
 
 import com.project.messageservice.message.dto.CreateMessageRequest;
@@ -27,8 +31,10 @@ import com.project.messageservice.message.repository.MessageRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 
+import org.testcontainers.containers.RabbitMQContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
+@ActiveProfiles("test")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers
 public class MessageControllerIT {
@@ -36,7 +42,42 @@ public class MessageControllerIT {
     @LocalServerPort
     private Integer port;
 
+    @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+    }
+
+    static final Path RABBITMQ_DEFINITIONS = Paths
+            .get("src", "test", "resources", "definitions-test.json")
+            .toAbsolutePath()
+            .normalize();
+
+    static final Path RABBITMQ_CONF = Paths
+            .get("src", "test", "resources", "rabbitmq-test.conf")
+            .toAbsolutePath()
+            .normalize();
+
+    @Container
+    @SuppressWarnings("resource")
+    static RabbitMQContainer rabbitmq = new RabbitMQContainer("rabbitmq:3-management-alpine")
+            .withCopyFileToContainer(
+                    MountableFile.forHostPath(RABBITMQ_DEFINITIONS),
+                    "/etc/rabbitmq/definitions.json")
+            .withCopyFileToContainer(
+                    MountableFile.forHostPath(RABBITMQ_CONF),
+                    "/etc/rabbitmq/rabbitmq.conf")
+            .withLogConsumer(frame -> System.out.print(frame.getUtf8String()));
+
+    @DynamicPropertySource
+    static void rabbitProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.rabbitmq.host", rabbitmq::getHost);
+        registry.add("spring.rabbitmq.port", rabbitmq::getAmqpPort);
+    }
 
     @Autowired
     MessageRepository messageRepository;
@@ -57,22 +98,6 @@ public class MessageControllerIT {
         labelRepository.deleteAll();
     }
 
-    @BeforeAll
-    static void setup() {
-        postgres.start();
-    }
-
-    @AfterAll
-    static void tearDown() {
-        postgres.stop();
-    }
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
 
     MessageResponse createMessage(CreateMessageRequest request) throws Exception {
 
@@ -251,7 +276,7 @@ public class MessageControllerIT {
 
     }
 
-     @Test
+    @Test
     void getLabels_retrievesAllLabels() throws Exception {
 
         CreateMessageRequest request = new CreateMessageRequest(senderId, recipientId, body);
@@ -262,8 +287,6 @@ public class MessageControllerIT {
 
         addLabel(message.id(), firstLabel);
         addLabel(message.id(), secondLabel);
-
-       
 
         RestAssured.given()
                 .port(port)
@@ -276,5 +299,4 @@ public class MessageControllerIT {
 
     }
 
-   
 }
