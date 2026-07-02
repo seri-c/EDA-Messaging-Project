@@ -1,7 +1,7 @@
 services:
 
   message-service:
-    build: .
+    build: ./notification-system/message-service
     ports:
       - "8080:8080"
     depends_on:
@@ -21,7 +21,8 @@ services:
       - "5432:5432"
 
   rabbitmq:
-    image: rabbitmq:3-management-alpine
+    build:
+      context: ./rabbitmq
     container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
@@ -29,14 +30,16 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    env_file:
+      - .env
     volumes:
       - rabbitmq:/var/lib/rabbitmq
       - ./rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      - ./rabbitmq/definitions.template.json:/etc/rabbitmq/definitions.json:ro
+      - ./rabbitmq/definitions.template.json:/etc/rabbitmq/definitions.template.json:ro
     command: >
-      sh -c "envsubst < /etc/rabbitmq/definitions.template.json
+      sh -c 'envsubst < /etc/rabbitmq/definitions.template.json
       > /etc/rabbitmq/definitions.json
-      && rabbitmq-server"
+      && rabbitmq-server'
       
 volumes:
   rabbitmq:
