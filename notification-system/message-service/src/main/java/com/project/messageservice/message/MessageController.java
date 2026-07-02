@@ -16,11 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.messageservice.message.dto.CreateMessageRequest;
 import com.project.messageservice.message.dto.MessageResponse;
+
+import jakarta.validation.Valid;
+
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
 
 @RestController
 @RequestMapping("/messages")
@@ -33,7 +34,8 @@ public class MessageController {
     }
 
     @PostMapping
-    public MessageResponse createMessage(@RequestBody CreateMessageRequest request) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public MessageResponse createMessage(@Valid @RequestBody CreateMessageRequest request) {
         return messageService.createMessage(request);
     }
 
@@ -48,20 +50,20 @@ public class MessageController {
         return messageService.getMessage(id);
     }
 
-    @PatchMapping("/{id}/acknowledge")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void acknowledgeMessage(@PathVariable UUID id) {
-        messageService.acknowledgeMessage(id);
-    }
-
     @PatchMapping("/{id}/read")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void readMessage(@PathVariable UUID id) {
         messageService.readMessage(id);
     }
 
+    @PatchMapping("/{id}/acknowledge")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void acknowledgeMessage(@PathVariable UUID id) {
+        messageService.acknowledgeMessage(id);
+    }
+
     @GetMapping("/{id}/labels")
-    public Set<String> getMessageLabels(@PathVariable UUID id){
+    public Set<String> getMessageLabels(@PathVariable UUID id) {
         return messageService.getMessageLabels(id);
     }
 
@@ -76,6 +78,5 @@ public class MessageController {
     public void removeLabel(@PathVariable UUID messageId, @PathVariable String labelName) {
         messageService.removeLabel(messageId, labelName);
     }
-
 
 }
